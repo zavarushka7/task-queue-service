@@ -23,3 +23,9 @@ server:
 app:
   storage:
     base-path: /data/uploads
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs

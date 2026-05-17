@@ -1,8 +1,8 @@
-package com.example.taskqueue.specification
+package com.example.taskqueueservice.specification
 
-import com.example.taskqueue.model.Task
-import com.example.taskqueue.model.TaskStatus
-import com.example.taskqueue.model.TaskType
+import com.example.taskqueueservice.model.Task
+import com.example.taskqueueservice.model.TaskStatus
+import com.example.taskqueueservice.model.TaskType
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification

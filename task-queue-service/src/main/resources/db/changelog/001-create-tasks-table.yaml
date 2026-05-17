@@ -45,10 +45,10 @@ databaseChangeLog:
                   type: VARCHAR(200)
               - column:
                   name: result
-                  type: TEXT
+                  type: VARCHAR(4000)
               - column:
                   name: error_message
-                  type: TEXT
+                  type: VARCHAR(4000)
               - column:
                   name: retry_count
                   type: INT

@@ -1,4 +1,4 @@
-package com.example.taskqueue.model
+package com.example.taskqueueservice.model
 
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -48,7 +48,7 @@ data class TaskEvent(
     /**
      * Детальное описание события в свободной форме
      */
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 4000)
     val details: String? = null,
 
     /**

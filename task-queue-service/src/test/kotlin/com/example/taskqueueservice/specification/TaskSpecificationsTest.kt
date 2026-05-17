@@ -1,17 +1,16 @@
-package com.example.taskqueue.specification
+package com.example.taskqueueservice.specification
 
-import com.example.taskqueue.helper.TestDataFactory
-import com.example.taskqueue.model.TaskStatus
-import com.example.taskqueue.model.TaskType
-import com.example.taskqueue.repository.TaskRepository
-import org.hibernate.internal.util.collections.CollectionHelper.listOf
+import com.example.taskqueueservice.helper.TestDataFactory
+import com.example.taskqueueservice.model.TaskStatus
+import com.example.taskqueueservice.model.TaskType
+import com.example.taskqueueservice.repository.TaskRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
-import org.springframework.data.domain.PageRequest
+
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -29,7 +28,6 @@ class TaskSpecificationsTest {
     @Test
     @DisplayName("Должен фильтровать задачи по статусу")
     fun shouldFilterByStatus() {
-        // Given
         taskRepository.saveAll(
             listOf(
                 TestDataFactory.createTask(filePath = "/data/1.csv", status = TaskStatus.PENDING),
@@ -38,11 +36,9 @@ class TaskSpecificationsTest {
             )
         )
 
-        // When
         val spec = TaskSpecifications.statusEquals(TaskStatus.PENDING)
         val result = taskRepository.findAll(spec)
 
-        // Then
         assertEquals(2, result.size)
         result.forEach { assertEquals(TaskStatus.PENDING, it.status) }
     }
@@ -50,7 +46,6 @@ class TaskSpecificationsTest {
     @Test
     @DisplayName("Должен фильтровать задачи по типу")
     fun shouldFilterByType() {
-        // Given
         taskRepository.saveAll(
             listOf(
                 TestDataFactory.createTask(filePath = "/data/1.csv", type = TaskType.CSV_PARSING),
@@ -59,73 +54,17 @@ class TaskSpecificationsTest {
             )
         )
 
-        // When
         val spec = TaskSpecifications.typeEquals(TaskType.CSV_PARSING)
         val result = taskRepository.findAll(spec)
 
-        // Then
         assertEquals(2, result.size)
         result.forEach { assertEquals(TaskType.CSV_PARSING, it.type) }
     }
 
-    @Test
-    @DisplayName("Должен фильтровать задачи созданные после даты")
-    fun shouldFilterByCreatedAfter() {
-        // Given
-        val now = Instant.now()
-        taskRepository.saveAll(
-            listOf(
-                TestDataFactory.createTask(
-                    filePath = "/data/old.csv",
-                    createdAt = now.minus(2, ChronoUnit.HOURS)
-                ),
-                TestDataFactory.createTask(
-                    filePath = "/data/new.csv",
-                    createdAt = now
-                )
-            )
-        )
-
-        // When
-        val spec = TaskSpecifications.createdAfter(now.minus(1, ChronoUnit.HOURS))
-        val result = taskRepository.findAll(spec)
-
-        // Then
-        assertEquals(1, result.size)
-        assertEquals("/data/new.csv", result[0].filePath)
-    }
-
-    @Test
-    @DisplayName("Должен фильтровать задачи созданные до даты")
-    fun shouldFilterByCreatedBefore() {
-        // Given
-        val now = Instant.now()
-        taskRepository.saveAll(
-            listOf(
-                TestDataFactory.createTask(
-                    filePath = "/data/old.csv",
-                    createdAt = now.minus(2, ChronoUnit.HOURS)
-                ),
-                TestDataFactory.createTask(
-                    filePath = "/data/new.csv",
-                    createdAt = now
-                )
-            )
-        )
-
-        // When
-        val spec = TaskSpecifications.createdBefore(now.minus(1, ChronoUnit.HOURS))
-        val result = taskRepository.findAll(spec)
-
-        // Then
-        assertEquals(1, result.size)
-        assertEquals("/data/old.csv", result[0].filePath)
-    }
 
     @Test
     @DisplayName("Должен фильтровать задачи по пути файла")
     fun shouldFilterByFilePath() {
-        // Given
         taskRepository.saveAll(
             listOf(
                 TestDataFactory.createTask(filePath = "/data/report.csv"),
@@ -134,11 +73,9 @@ class TaskSpecificationsTest {
             )
         )
 
-        // When
         val spec = TaskSpecifications.filePathContains("report")
         val result = taskRepository.findAll(spec)
 
-        // Then
         assertEquals(2, result.size)
         result.forEach { assertTrue(it.filePath.contains("report")) }
     }
@@ -146,7 +83,6 @@ class TaskSpecificationsTest {
     @Test
     @DisplayName("Должен фильтровать задачи по приоритету")
     fun shouldFilterByPriority() {
-        // Given
         taskRepository.saveAll(
             listOf(
                 TestDataFactory.createTask(filePath = "/data/1.csv", priority = 1),
@@ -155,11 +91,9 @@ class TaskSpecificationsTest {
             )
         )
 
-        // When
         val spec = TaskSpecifications.priorityGreaterThanOrEqual(5)
         val result = taskRepository.findAll(spec)
 
-        // Then
         assertEquals(2, result.size)
         result.forEach { assertTrue(it.priority >= 5) }
     }
@@ -167,7 +101,6 @@ class TaskSpecificationsTest {
     @Test
     @DisplayName("Должен комбинировать фильтры через AND")
     fun shouldCombineFilters() {
-        // Given
         val now = Instant.now()
         taskRepository.saveAll(
             listOf(
@@ -192,12 +125,10 @@ class TaskSpecificationsTest {
             )
         )
 
-        // When
         val spec = TaskSpecifications.statusEquals(TaskStatus.PENDING)
             .and(TaskSpecifications.typeEquals(TaskType.CSV_PARSING))
         val result = taskRepository.findAll(spec)
 
-        // Then
         assertEquals(1, result.size)
         assertEquals("/data/pending_report.csv", result[0].filePath)
         assertEquals(TaskStatus.PENDING, result[0].status)

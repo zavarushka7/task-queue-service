@@ -1,4 +1,4 @@
-package com.example.taskqueue.model
+package com.example.taskqueueservice.model
 
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -68,13 +68,13 @@ data class Task(
     /**
      * Результат обработки (JSON строка или любой другой формат)
      */
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 40000)
     var result: String? = null,
 
     /**
      * Сообщение об ошибке, если задача завершилась неудачно
      */
-    @Column(name = "error_message", columnDefinition = "TEXT")
+    @Column(name = "error_message", length = 40000)
     var errorMessage: String? = null,
 
     /**

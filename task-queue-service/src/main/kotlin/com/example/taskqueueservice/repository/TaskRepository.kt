@@ -1,9 +1,7 @@
-package com.example.taskqueue.repository
+package com.example.taskqueueservice.repository
 
-import com.example.taskqueue.model.Task
-import com.example.taskqueue.model.TaskStatus
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
+import com.example.taskqueueservice.model.Task
+import com.example.taskqueueservice.model.TaskStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query

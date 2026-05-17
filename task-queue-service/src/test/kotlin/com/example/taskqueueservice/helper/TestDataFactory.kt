@@ -1,8 +1,8 @@
-package com.example.taskqueue.helper
+package com.example.taskqueueservice.helper
 
-import com.example.taskqueue.model.Task
-import com.example.taskqueue.model.TaskStatus
-import com.example.taskqueue.model.TaskType
+import com.example.taskqueueservice.model.Task
+import com.example.taskqueueservice.model.TaskStatus
+import com.example.taskqueueservice.model.TaskType
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.UUID
@@ -20,7 +20,7 @@ object TestDataFactory {
         mimeType: String = "text/csv",
         retryCount: Int = 0,
         createdAt: Instant = Instant.now(),
-        updatedAt: Instant = Instant.now()
+        updatedAt: Instant? = null
     ): Task {
         return Task(
             id = id,
@@ -39,12 +39,16 @@ object TestDataFactory {
 
     fun createTaskList(count: Int, status: TaskStatus = TaskStatus.PENDING): List<Task> {
         return (1..count).map { index ->
-            createTask(
+            Task(
                 id = UUID.randomUUID(),
                 filePath = "/data/file_${index}.csv",
                 originalFileName = "file_${index}.csv",
+                type = TaskType.CSV_PARSING,
                 status = status,
                 priority = index % 5,
+                fileSize = 1024,
+                mimeType = "text/csv",
+                retryCount = 0,
                 createdAt = Instant.now().minus(index.toLong(), ChronoUnit.HOURS)
             )
         }

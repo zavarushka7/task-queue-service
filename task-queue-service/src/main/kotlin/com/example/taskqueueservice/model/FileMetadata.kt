@@ -1,4 +1,4 @@
-package com.example.taskqueue.model
+package com.example.taskqueueservice.model
 
 import java.time.Instant
 

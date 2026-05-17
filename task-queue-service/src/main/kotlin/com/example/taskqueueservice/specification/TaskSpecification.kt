@@ -75,4 +75,12 @@ object TaskSpecifications {
             criteriaBuilder.lessThanOrEqualTo(root.get<Int>("priority"), maxPriority)
         }
     }
+
+    fun andAll(specifications: List<Specification<Task>>): Specification<Task> {
+        return if (specifications.isEmpty()) {
+            Specification { _, _, criteriaBuilder -> criteriaBuilder.conjunction() }
+        } else {
+            specifications.reduce { acc, spec -> acc.and(spec) }
+        }
+    }
 }

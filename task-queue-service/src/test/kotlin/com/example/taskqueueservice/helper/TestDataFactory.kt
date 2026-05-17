@@ -10,7 +10,7 @@ import java.util.UUID
 object TestDataFactory {
 
     fun createTask(
-        id: UUID? = null,
+        id: UUID? = UUID.randomUUID(),
         filePath: String = "/data/test.csv",
         originalFileName: String = "test.csv",
         type: TaskType = TaskType.CSV_PARSING,

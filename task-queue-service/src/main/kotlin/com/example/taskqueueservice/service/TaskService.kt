@@ -25,7 +25,8 @@ class TaskService(
     private val taskRepository: TaskRepository,
     private val fileMetadataService: FileMetadataService,
     private val taskEventService: TaskEventService,
-    private val taskQueueManager: TaskQueueManager
+    private val taskQueueManager: TaskQueueManager,
+    private val taskMetricsService: TaskMetricsService
 ) {
 
     fun createTask(request: CreateTaskRequest): TaskResponse {
@@ -42,7 +43,10 @@ class TaskService(
             newStatus = TaskStatus.PENDING,
             details = "Задача создана для файла: ${request.originalFileName}"
         )
+
+        taskMetricsService.incrementCreated()
         taskQueueManager.submitTask(savedTask)
+
         return TaskMapper.toResponse(savedTask)
     }
 
@@ -89,6 +93,8 @@ class TaskService(
             newStatus = TaskStatus.CANCELLED,
             details = "Задача отменена пользователем"
         )
+
+        taskMetricsService.incrementCancelled()
 
         return TaskMapper.toResponse(task)
     }

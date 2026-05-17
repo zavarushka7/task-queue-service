@@ -17,6 +17,7 @@ class TaskProcessor(
     private val taskRepository: TaskRepository,
     private val taskEventService: TaskEventService,
     private val strategies: List<TaskProcessingStrategy>,
+    private val taskMetricsService: TaskMetricsService,
     @Value("\${app.processing.max-retry-attempts:3}")
     private val maxRetryAttempts: Int
 ) {
@@ -60,6 +61,9 @@ class TaskProcessor(
                 details = "Обработка завершена за ${processingTime}мс. Результат: $result"
             )
 
+            taskMetricsService.incrementCompleted()
+            taskMetricsService.recordProcessingTime(processingTime)
+
         } catch (e: Exception) {
             logger.error("Ошибка обработки задачи ${task.id}", e)
             handleError(task, e)
@@ -91,6 +95,8 @@ class TaskProcessor(
                 newStatus = TaskStatus.FAILED,
                 details = "Задача провалена после $maxRetryAttempts попыток. Ошибка: ${exception.message}"
             )
+
+            taskMetricsService.incrementFailed()
         }
     }
 }

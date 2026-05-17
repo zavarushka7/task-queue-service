@@ -27,9 +27,21 @@ app:
     max-concurrent-tasks: 5
   processing:
     max-retry-attempts: 3
+    stuck-timeout-minutes: 10
+    stuck-check-interval-ms: 300000
 
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
   api-docs:
     path: /api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
+  prometheus:
+    metrics:
+      export:
+        enabled: true

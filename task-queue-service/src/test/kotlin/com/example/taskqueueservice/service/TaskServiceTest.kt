@@ -1,7 +1,6 @@
 package com.example.taskqueueservice.service
 
 import com.example.taskqueueservice.dto.request.CreateTaskRequest
-import com.example.taskqueueservice.dto.request.TaskFilterRequest
 import com.example.taskqueueservice.exception.FileNotFoundException
 import com.example.taskqueueservice.exception.InvalidStatusTransitionException
 import com.example.taskqueueservice.exception.TaskNotFoundException
@@ -16,9 +15,6 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.jpa.domain.Specification
 import java.util.Optional
 import java.util.UUID
 
@@ -27,6 +23,8 @@ class TaskServiceTest {
     private lateinit var taskRepository: TaskRepository
     private lateinit var fileMetadataService: FileMetadataService
     private lateinit var taskEventService: TaskEventService
+    private lateinit var taskQueueManager: TaskQueueManager
+    private lateinit var taskMetricsService: TaskMetricsService
     private lateinit var taskService: TaskService
 
     @BeforeEach
@@ -34,7 +32,15 @@ class TaskServiceTest {
         taskRepository = mockk()
         fileMetadataService = mockk()
         taskEventService = mockk()
-        taskService = TaskService(taskRepository, fileMetadataService, taskEventService)
+        taskQueueManager = mockk()
+        taskMetricsService = mockk()
+        taskService = TaskService(
+            taskRepository = taskRepository,
+            fileMetadataService = fileMetadataService,
+            taskEventService = taskEventService,
+            taskQueueManager = taskQueueManager,
+            taskMetricsService = taskMetricsService
+        )
     }
 
     @Test
@@ -50,13 +56,16 @@ class TaskServiceTest {
         every { fileMetadataService.validateFileExists(request.filePath) } returns true
         every { taskRepository.save(any()) } returns task
         every { taskEventService.logEvent(any(), any(), any(), any(), any()) } returns mockk()
+        every { taskMetricsService.incrementCreated() } returns Unit
+        every { taskQueueManager.submitTask(any()) } returns Unit
 
         val result = taskService.createTask(request)
 
         assertEquals(task.id, result.id)
         assertEquals(TaskStatus.PENDING, result.status)
         verify(exactly = 1) { taskRepository.save(any()) }
-        verify(exactly = 1) { taskEventService.logEvent(any(), any(), any(), any(), any()) }
+        verify(exactly = 1) { taskMetricsService.incrementCreated() }
+        verify(exactly = 1) { taskQueueManager.submitTask(any()) }
     }
 
     @Test
@@ -98,7 +107,6 @@ class TaskServiceTest {
         }
     }
 
-
     @Test
     @DisplayName("Не должен отменять уже завершённую задачу")
     fun shouldNotCancelCompletedTask() {
@@ -117,11 +125,12 @@ class TaskServiceTest {
         every { taskRepository.findById(task.id!!) } returns Optional.of(task)
         every { taskRepository.save(any()) } returns task
         every { taskEventService.logEvent(any(), any(), any(), any(), any()) } returns mockk()
+        every { taskMetricsService.incrementCancelled() } returns Unit
 
         val result = taskService.cancelTask(task.id!!)
 
         assertEquals(TaskStatus.CANCELLED, result.status)
-        verify(exactly = 1) { taskEventService.logEvent(any(), any(), any(), any(), any()) }
+        verify(exactly = 1) { taskMetricsService.incrementCancelled() }
     }
 
     @Test

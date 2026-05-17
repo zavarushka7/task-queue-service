@@ -14,7 +14,8 @@ class TaskQueueManager(
     private val taskProcessor: TaskProcessor,
     private val taskRepository: TaskRepository,
     private val coroutineScope: CoroutineScope,
-    private val semaphore: Semaphore
+    private val semaphore: Semaphore,
+    private val taskMetricsService: TaskMetricsService
 ) {
 
     private val logger = LoggerFactory.getLogger(TaskQueueManager::class.java)
@@ -23,11 +24,13 @@ class TaskQueueManager(
         coroutineScope.launch {
             try {
                 semaphore.acquire()
+                taskMetricsService.setActiveWorkers(getActiveWorkersCount())
                 processTask(task)
             } catch (e: Exception) {
                 logger.error("Ошибка в очереди задач", e)
             } finally {
                 semaphore.release()
+                taskMetricsService.setActiveWorkers(getActiveWorkersCount())
             }
         }
     }

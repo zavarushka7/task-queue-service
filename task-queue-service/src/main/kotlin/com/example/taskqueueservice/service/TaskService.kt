@@ -24,7 +24,8 @@ import java.util.UUID
 class TaskService(
     private val taskRepository: TaskRepository,
     private val fileMetadataService: FileMetadataService,
-    private val taskEventService: TaskEventService
+    private val taskEventService: TaskEventService,
+    private val taskQueueManager: TaskQueueManager
 ) {
 
     fun createTask(request: CreateTaskRequest): TaskResponse {
@@ -41,7 +42,7 @@ class TaskService(
             newStatus = TaskStatus.PENDING,
             details = "Задача создана для файла: ${request.originalFileName}"
         )
-
+        taskQueueManager.submitTask(savedTask)
         return TaskMapper.toResponse(savedTask)
     }
 

@@ -23,6 +23,10 @@ server:
 app:
   storage:
     base-path: /data/uploads
+  queue:
+    max-concurrent-tasks: 5
+  processing:
+    max-retry-attempts: 3
 
 springdoc:
   swagger-ui:

@@ -18,4 +18,3 @@ databaseChangeLog:
                   name: task_id
               - column:
                   name: timestamp
-                  descending: true

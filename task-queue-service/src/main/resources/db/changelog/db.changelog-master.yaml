@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/001-create-tasks-table.yaml
+  - include:
+      file: db/changelog/002-create-task-events-table.yaml
+  - include:
+      file: db/changelog/003-add-tasks-indexes.yaml
+  - include:
+      file: db/changelog/004-add-events-indexes.yaml

@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: alena
+      comment: Добавление индексов для таблицы событий
+      changes:
+        - createIndex:
+            tableName: task_events
+            indexName: idx_task_events_task_id
+            columns:
+              - column:
+                  name: task_id
+        - createIndex:
+            tableName: task_events
+            indexName: idx_task_events_task_timestamp
+            columns:
+              - column:
+                  name: task_id
+              - column:
+                  name: timestamp
+                  descending: true

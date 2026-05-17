@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: alena
+      comment: Добавление индексов для таблицы задач
+      changes:
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_status
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_type
+            columns:
+              - column:
+                  name: type
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_created_at
+            columns:
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_queue
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: priority
+              - column:
+                  name: created_at
